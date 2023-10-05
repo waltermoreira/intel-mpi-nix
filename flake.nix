@@ -117,103 +117,19 @@
                 # mkdir -p $out/$deb
                 ${dpkg}/bin/dpkg-deb -x $deb $out
               done
+              ln -s $out/opt/intel/oneapi/mpi/2021.10.0/bin $out/bin
+              ln -s $out/opt/intel/oneapi/mpi/2021.10.0/env $out/env
             '';
           };
-          # hpcKitBundle = pkgs.fetchurl {
-          #   url = "https://registrationcenter-download.intel.com/akdlm/IRC_NAS/0722521a-34b5-4c41-af3f-d5d14e88248d/l_HPCKit_p_2023.2.0.49440_offline.sh";
-          #   hash = "sha256-aIDny4lORvyzynQbqTokb2EPfCrCX07AOSocJD3rpKo=";
-          #   executable = true;
-          # };
-          # hpcKitInstaller = pkgs.fetchurl {
-          #   url = "https://installer.repos.intel.com/managed/installer/intel.installer.oneapi.linux.installer,v=4.3.2.892/installer.zip";
-          #   hash = "sha256-wc/C1tRRB0kBN6s/M7dvMyxAZanEBnW0kuygx6NFhq8=";
-          # };
-          # hpcKitPackageManager = pkgs.fetchurl {
-          #   url = "https://installer.repos.intel.com/managed/installer/intel.installer.packagemanager.linux,v=4.3.2-892/packagemanager.zip";
-          #   hash = "sha256-DKlc3WXjisuy0s+3d14tLQiDHpNqa1k0ODdHyGxAbAE=";
-          # };
-          # hpcKit = pkgs.stdenv.mkDerivation {
-          #   name = "hpcKit";
-          #   src = self;
-          #   nativeBuildInputs = [ pkgs.breakpointHook ];
-          #   buildInputs = with pkgs; [
-          #     ncurses
-          #     strace
-          #     pkg-config
-          #     cmake
-          #     git
-          #     gnupg
-          #     p7zip
-          #     gnused
-          #   ];
-          #   dontConfigure = true;
-          #   dontBuild = true;
-          #   installPhase = with pkgs; ''
-          #     HOME=$TMP
-          #     USER=nix
-          #     mkdir -p $TMP/intel/packagemanager/1.0
-          #     mkdir -p $TMP/intel/oneapi/installer
-          #     mkdir -p $TMP/intel/installercache
-          #     mkdir -p $TMP/bundle
-          #     ${hpcKitBundle} -f $TMP/bundle -x
-          #     # ${p7zip}/bin/7z x -o$TMP/intel/oneapi/installer ${hpcKitInstaller}
-          #     # ${p7zip}/bin/7z x -o$TMP/intel/packagemanager/1.0 ${hpcKitPackageManager}
-          #     # patchelf --add-rpath "${stdenv.cc.cc.lib}/lib:${glibc}/lib" \
-          #     #   $TMP/intel/oneapi/installer/installer
-          #     # patchelf --set-interpreter "${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2" \
-          #     #   $TMP/intel/oneapi/installer/installer
-          #     # patchelf --add-rpath "${stdenv.cc.cc.lib}/lib:${glibc}/lib" \
-          #     #   $TMP/intel/packagemanager/1.0/packagemanager
-          #     # patchelf --set-interpreter "${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2" \
-          #     #   $TMP/intel/packagemanager/1.0/packagemanager
-          #     # HASH=$(sha384sum $TMP/intel/packagemanager/1.0/packagemanager | cut -d' ' -f1)
-          #     # SIZE=$(stat -c "%s" $TMP/intel/packagemanager/1.0/packagemanager)
-          #     # ${gnused}/bin/sed -i 's/\(sha384": "\).*"/\1'$HASH'"/' \
-          #     #   $TMP/intel/packagemanager/1.0/packagemanager.json
-          #     # ${gnused}/bin/sed -i 's/\(size": \).*$/\1'$SIZE'"/' \
-          #     #   $TMP/intel/packagemanager/1.0/packagemanager.json
-          #     patchelf --add-rpath "${stdenv.cc.cc.lib}/lib:${glibc}/lib" \
-          #       $TMP/bundle/l_HPCKit_p_2023.2.0.49440_offline/bootstrapper
-          #     patchelf --set-interpreter "${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2" \
-          #       $TMP/bundle/l_HPCKit_p_2023.2.0.49440_offline/bootstrapper
-          #     HOME=$TMP TMPDIR=$TMP $TMP/bundle/l_HPCKit_p_2023.2.0.49440_offline/bootstrapper \
-          #       --cli --silent --eula=accept --install-dir=$out --log-dir=. || true
-          #     ls -l $TMP/intel/oneapi/installer
-          #     patchelf --add-rpath "${stdenv.cc.cc.lib}/lib:${glibc}/lib" \
-          #       $TMP/intel/oneapi/installer/installer
-          #     patchelf --set-interpreter "${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2" \
-          #       $TMP/intel/oneapi/installer/installer
-          #     HOME=$TMP TMPDIR=$TMP strace $TMP/intel/oneapi/installer/installer \
-          #       --cli --silent --eula=accept --install-dir=$out --log-dir=. \
-          #       --product-id=intel.oneapi.lin.hpckit.product \
-          #       --product-ver=2023.2.0-49438 \
-          #       --package-path=$TMP/bundle/l_HPCKit_p_2023.2.0.49440_offline/packages
-          #   '';
-          #   # doDist = true;
-          #   # distPhase = with pkgs; ''
-          #   #   patchelf --add-rpath "${stdenv.cc.cc.lib}/lib:${glibc}/lib" \
-          #   #     $mytemp/extract/$KIT_NAME/bootstrapper
-          #   #   patchelf --set-interpreter "${stdenv.cc.libc}/lib/ld-linux-x86-64.so.2" \
-          #   #     $mytemp/extract/$KIT_NAME/bootstrapper
-          #   #   echo "Out is $out"
-          #   #   export HOME=$(pwd)
-          #   #   export TMPDIR=$(pwd)
-          #   #   export USER=nix
-          #   #   $mytemp/extract/$KIT_NAME/bootstrapper --cli --silent --eula=accept --install-dir=$out --log-dir=.
-          #   # '';
-          #   #   patchelf --add-rpath \
-          #   #     '$ORIGIN/'":${stdenv.cc.cc.lib}/lib:${glibc}/lib:${xorg.libXau}/lib:${xorg.libXdmcp}/lib:${libbsd}/lib:${libmd}/lib:${libxkbcommon}/lib" \
-          #   #     $mytemp/extract/$KIT_NAME/{lib/*,plugins/tls/libqopensslbackend.so,plugins/platforms/libqxcb.so,plugins/imageformats/libqgif.so,"packages/intel.oneapi.lin.oneapi-common.vars,v=2023.2.0-49462/lin/install-history"}
-          #   #   $mytemp/extract/$KIT_NAME/bootstrapper --help
-          #   #   #$mytemp/extract/$KIT_NAME/install.sh --cli -s --eula --install-dir $out
-          #   # '';
-          # };
         in
         {
           devShells.default = shell {
-            name = "Intel HPC Kit";
+            name = "Intel-HPC-Kit";
+            packages = [ hpcKit ];
+            shellHook = ''
+              source ${hpcKit}/env/vars.sh
+            '';
           };
           packages.default = hpcKit;
-          packages.foo = hpcKitDebs;
         });
 }
