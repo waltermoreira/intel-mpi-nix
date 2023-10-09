@@ -19,7 +19,7 @@ A working installation of Nix on Linux x86_64
    ```
 3. Run the example with:
    ```bash
-   mpirun hello
+   mpirun ./hello
    ```
 
 Alternatively, you can run the development environment directly from Github with:
