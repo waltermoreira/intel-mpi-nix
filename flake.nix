@@ -78,6 +78,10 @@
               package = "intel-oneapi-compiler-dpcpp-cpp-runtime-2023.2.0-2023.2.0-49495_amd64";
               hash = "sha256-9j1HQA+F/rbB+wat4DkLriSBow3BDo4LRF0Y2nzs/PA=";
             }
+            {
+              package = "intel-oneapi-mkl-2023.2.0-49495_amd64";
+              hash = "sha256-dXrb3ZO8WzbEgNazTIKB7510Y4MRiulmIYdqwRy2/Tk=";
+            }
           ];
           hpcKitDebs = map
             ({ package, hash }: pkgs.fetchurl {
@@ -92,6 +96,7 @@
             dontBuild = true;
             nativeBuildInputs = with pkgs; [
               autoPatchelfHook
+              breakpointHook
             ];
             buildInputs = with pkgs; [
               zlib
@@ -119,6 +124,7 @@
               done
               ln -s $out/opt/intel/oneapi/mpi/2021.10.0/bin $out/bin
               ln -s $out/opt/intel/oneapi/mpi/2021.10.0/env $out/env
+              false
             '';
           };
         in
